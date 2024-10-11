@@ -52,6 +52,14 @@ function generate_certificates() {
                 wp_die('Failed to open CSV file.');
             }
 
+            // Determine which certificate template to use based on the selected type
+            $certificate_type = $_POST['certificate_type'];
+            if ($certificate_type == 'oncampus') {
+                $templatePath = plugin_dir_path(__FILE__) . 'templates/blank on-campus certificate.pdf';
+            } else {
+                $templatePath = plugin_dir_path(__FILE__) . 'templates/online_cpc.pdf'; // Path for online certificate
+            }
+
             // Skip the first row (header)
             fgetcsv($csvFile);
 
@@ -66,10 +74,8 @@ function generate_certificates() {
                 $issue_date = $data[6];
                 $teacher_name = $data[7];
 
-                // Load the existing PDF template
+                // Load the selected PDF template
                 $pdf = new Fpdi();
-                // Path to your template (update this path if needed)
-                $templatePath = plugin_dir_path(__FILE__) . 'templates/online_cpc.pdf'; 
                 
                 // Get page count and load the template
                 $pageCount = $pdf->setSourceFile($templatePath);
@@ -88,7 +94,7 @@ function generate_certificates() {
                 // Adjust positions based on your template layout
 
                 // Set coordinates for "Participant Name"
-                $pdf->SetXY(150, 213);  // Coordinates for "Participant Name"
+                $pdf->SetXY(155, 213);  // Coordinates for "Participant Name"
                 $pdf->Write(10, htmlspecialchars($name, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "aus/from"
@@ -96,7 +102,7 @@ function generate_certificates() {
                 $pdf->Write(10, htmlspecialchars($course, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "geboren am/Date of Birth"
-                $pdf->SetXY(173, 235);  // Coordinates for "Date of Birth"
+                $pdf->SetXY(155, 235);  // Coordinates for "Date of Birth"
                 $pdf->Write(10, htmlspecialchars($dob, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "in/Place of Birth"
@@ -104,7 +110,7 @@ function generate_certificates() {
                 $pdf->Write(10, htmlspecialchars($place_of_birth, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "vom/Start Date"
-                $pdf->SetXY(50, 145);  // Coordinates for "Start Date"
+                $pdf->SetXY(155, 257);  // Coordinates for "Start Date"
                 $pdf->Write(10, htmlspecialchars($start_date, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "bis zum/End Date"
@@ -119,13 +125,16 @@ function generate_certificates() {
                 $pdf->SetXY(50, 190);  // Coordinates for "Teacher's Name"
                 $pdf->Write(10, htmlspecialchars($teacher_name, ENT_QUOTES, 'UTF-8'));
 
-                // Save the generated PDF
+                // Add a unique timestamp to the file name to avoid overwriting
+                $timestamp = time();
                 $upload_dir = wp_upload_dir();
-                $pdf_path = $upload_dir['path'] . '/Certificate_' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '.pdf';
+                $pdf_path = $upload_dir['path'] . '/Certificate_' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '_' . $timestamp . '.pdf';
+
+                // Save the generated PDF
                 $pdf->Output('F', $pdf_path);
 
                 // Redirect to the form with a success message and download link
-                $pdf_url = $upload_dir['url'] . '/Certificate_' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '.pdf';
+                $pdf_url = $upload_dir['url'] . '/Certificate_' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '_' . $timestamp . '.pdf';
                 wp_redirect(add_query_arg(array('certificate_generated' => 'true', 'certificate_url' => urlencode($pdf_url)), admin_url('admin.php?page=certificate-generator')));
                 exit;
             }
