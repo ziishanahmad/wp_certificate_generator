@@ -64,15 +64,15 @@ function generate_certificates() {
             fgetcsv($csvFile);
 
             while (($data = fgetcsv($csvFile, 1000, ",")) !== FALSE) {
-                // Assuming CSV columns: Name, Course, Date of Birth, Place of Birth, Start Date, End Date, Issue Date, Teacher's Name
+                // Assuming CSV columns: Name, From, Date of Birth, Place of Birth, Start Date, End Date, Book name, Teacher's Name
                 $name = $data[0];
-                $course = $data[1];
+                $from = $data[1];
                 $dob = $data[3];
                 $place_of_birth = $data[2];
                 $start_date = $data[4];
                 $end_date = $data[5];
-                $issue_date = $data[6];
-                $teacher_name = $data[7];
+                $book_name = $data[6];
+                $teacher_name = $data[8];
 
                 // Load the selected PDF template
                 $pdf = new Fpdi();
@@ -100,8 +100,8 @@ function generate_certificates() {
                 $pdf->Write(10, htmlspecialchars($name, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "aus/from"
-                $pdf->SetXY(270, 213);  // Coordinates for "aus/from"
-                $pdf->Write(10, htmlspecialchars($course, ENT_QUOTES, 'UTF-8'));
+                $pdf->SetXY(280, 213);  // Coordinates for "aus/from"
+                $pdf->Write(10, htmlspecialchars($from, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "geboren am/Date of Birth"
                 $pdf->SetXY(155, 235);  // Coordinates for "Date of Birth"
@@ -116,15 +116,15 @@ function generate_certificates() {
                 $pdf->Write(10, htmlspecialchars($start_date, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "bis zum/End Date"
-                $pdf->SetXY(50, 160);  // Coordinates for "End Date"
+                $pdf->SetXY(280, 257);  // Coordinates for "End Date"
                 $pdf->Write(10, htmlspecialchars($end_date, ENT_QUOTES, 'UTF-8'));
 
-                // Set coordinates for "Issue Date"
-                $pdf->SetXY(50, 175);  // Coordinates for "Issue Date"
-                $pdf->Write(10, htmlspecialchars($issue_date, ENT_QUOTES, 'UTF-8'));
+                // Set coordinates for "Book name"
+                $pdf->SetXY(125, 344);  // Coordinates for "Book name"
+                $pdf->Write(10, htmlspecialchars($book_name, ENT_QUOTES, 'UTF-8'));
 
                 // Set coordinates for "Teacher's Name"
-                $pdf->SetXY(50, 190);  // Coordinates for "Teacher's Name"
+                $pdf->SetXY(180, 370);  // Coordinates for "Teacher's Name"
                 $pdf->Write(10, htmlspecialchars($teacher_name, ENT_QUOTES, 'UTF-8'));
 
                 // Add a unique timestamp to the file name to avoid overwriting
