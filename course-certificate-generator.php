@@ -67,8 +67,8 @@ function generate_certificates() {
                 // Assuming CSV columns: Name, Course, Date of Birth, Place of Birth, Start Date, End Date, Issue Date, Teacher's Name
                 $name = $data[0];
                 $course = $data[1];
-                $dob = $data[2];
-                $place_of_birth = $data[3];
+                $dob = $data[3];
+                $place_of_birth = $data[2];
                 $start_date = $data[4];
                 $end_date = $data[5];
                 $issue_date = $data[6];
@@ -92,6 +92,8 @@ function generate_certificates() {
                 $pdf->SetFont('Arial', '', 18);
 
                 // Adjust positions based on your template layout
+
+                // X for sideways Y for up and down
 
                 // Set coordinates for "Participant Name"
                 $pdf->SetXY(155, 213);  // Coordinates for "Participant Name"
